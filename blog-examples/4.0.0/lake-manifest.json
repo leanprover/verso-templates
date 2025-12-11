@@ -4,8 +4,8 @@
  [{"git":
    {"url": "https://github.com/leanprover/subverso.git",
     "subDir?": null,
-    "rev": "597aa7f6d1d4bc22c5bdef797797497b10bea1f4",
+    "rev": "74707332877e302cbfa47a136380a4dd1f035269",
     "opts": {},
     "name": "subverso",
-    "inputRev?": "main",
+    "inputRev?": "no-modules/1d663ae67d8088111bb37c3c526fe2d43e4df01c",
     "inherited": false}}]}

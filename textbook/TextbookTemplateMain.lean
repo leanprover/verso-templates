@@ -37,7 +37,7 @@ partial def buildExercises (mode : Mode) (logError : String → IO Unit) (cfg : 
   for ⟨fn, f⟩ in code do
     -- Make sure the path is relative to that of this one
     if let some fn' := fn.dropPrefix? mainDir.toString then
-      let fn' := fn'.toString.dropWhile (· ∈ System.FilePath.pathSeparators)
+      let fn' := (fn'.dropWhile (· ∈ System.FilePath.pathSeparators)).copy
       let fn := dest / fn'
       fn.parent.forM IO.FS.createDirAll
       if (← fn.pathExists) then IO.FS.removeFile fn
@@ -66,7 +66,7 @@ where
         modify fun saved =>
           saved.alter fn fun prior =>
           let prior := prior.getD ""
-          some (code.trimRight ++ "\n" ++ prior)
+          some (code.trimAsciiEnd.copy ++ "\n" ++ prior)
 
       for b in contents do block b
     | .concat bs | .blockquote bs =>
@@ -80,10 +80,10 @@ where
     | .para .. | .code .. => pure ()
 
 
-def config : Config where
+def config : RenderConfig where
   emitTeX := false
-  emitHtmlSingle := false
-  emitHtmlMulti := true
+  emitHtmlSingle := .no
+  emitHtmlMulti := .immediately
   htmlDepth := 2
 
 def main := manualMain (%doc TextbookTemplate) (extraSteps := [buildExercises]) (config := config)

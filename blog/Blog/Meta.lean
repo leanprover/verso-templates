@@ -207,8 +207,8 @@ instance [MonadLift m m'] [Monad m'] [MonadConfig m] : MonadConfig m' where
 Adds navigation breadcrumbs to a template, if the current path is at least as long as `threshold`.
 -/
 def breadcrumbs (threshold : Nat) : Template := do
-  if (← read).path.length ≥ threshold then
-    let some pathTitles ← parents (← read).site (← read).path
+  if (← read).path.size ≥ threshold then
+    let some pathTitles ← parents (← read).site (← read).path.toList
       | pure .empty
     pure {{
       <nav class="breadcrumbs" role="navigation">

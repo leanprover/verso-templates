@@ -6,14 +6,14 @@ Author: David Thrane Christiansen
 
 import Std.Data.HashMap
 import VersoManual
-import DemoTextbook
+import TextbookTemplate
 
 open Verso Doc
 open Verso.Genre Manual
 
 open Std (HashMap)
 
-open DemoTextbook
+open TextbookTemplate
 
 
 -- Computes the path of this very `main`, to ensure that examples get names relative to it
@@ -31,7 +31,7 @@ partial def buildExercises (mode : Mode) (logError : String → IO Unit) (cfg : 
   let code := (← part text |>.run {}).snd
   let dest := cfg.destination / "example-code"
   let some mainDir := mainFileName.parent
-    | throw <| IO.userError "Can't find directory of `DemoTextbookMain.lean`"
+    | throw <| IO.userError "Can't find directory of `TextbookTemplateMain.lean`"
 
   IO.FS.createDirAll <| dest
   for ⟨fn, f⟩ in code do
@@ -86,4 +86,4 @@ def config : Config where
   emitHtmlMulti := true
   htmlDepth := 2
 
-def main := manualMain (%doc DemoTextbook) (extraSteps := [buildExercises]) (config := config)
+def main := manualMain (%doc TextbookTemplate) (extraSteps := [buildExercises]) (config := config)

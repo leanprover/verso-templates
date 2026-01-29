@@ -2,7 +2,7 @@ import Lake
 
 open Lake DSL
 
-require subverso from git "https://github.com/leanprover/subverso.git"@"no-modules/1d663ae67d8088111bb37c3c526fe2d43e4df01c"
+require subverso from git "https://github.com/leanprover/subverso.git"@"no-modules/1e55697c44a646f8a22e2a91878efc4496aa5743"
 
 
 

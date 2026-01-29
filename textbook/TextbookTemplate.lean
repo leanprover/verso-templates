@@ -5,11 +5,11 @@ Author: David Thrane Christiansen
 -/
 
 import VersoManual
-import DemoTextbook.Meta.Lean
-import DemoTextbook.Papers
+import TextbookTemplate.Meta.Lean
+import TextbookTemplate.Papers
 
 -- This is a chapter that's included
-import DemoTextbook.Nat
+import TextbookTemplate.Nat
 
 -- This gets access to most of the manual genre (which is also useful for textbooks)
 open Verso.Genre Manual
@@ -19,7 +19,7 @@ open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
 
 
-open DemoTextbook
+open TextbookTemplate
 
 set_option pp.rawOnError true
 
@@ -54,7 +54,7 @@ Use {lean}`name` to refer to a name that can't be easily elaborated as a term, e
 
 ## Saved Lean Code
 
-The tools in this section come from the Verso namespace `DemoTextbook` in the module `DemoTextbook.Meta.Lean`.
+The tools in this section come from the Verso namespace `TextbookTemplate` in the module `TextbookTemplate.Meta.Lean`.
 
 The {lean}`savedLean` code block is just like the {lean}`lean` block, except it additionally saves the contents to a file when the book is built.
 The code is saved to the output directory, in the subdirectory `example-code` (by default, this is `_out/example-code`), with its filename being that of the file in which it is edited.
@@ -85,7 +85,7 @@ Expected error messages must be indicated explicitly:
 Unknown identifier `y`
 ```
 
-{include 1 DemoTextbook.Nat}
+{include 1 TextbookTemplate.Nat}
 
 # Notes
 

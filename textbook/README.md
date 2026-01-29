@@ -15,10 +15,10 @@ in a different version of Lean.
 
 Additionally, this example demonstrates a non-trivial extension to the
 manual genre: extraction of Lean modules from the inline examples. This
-extension uses [a custom `savedLean` code block](DemoTextbook/Meta/Lean.lean)
+extension uses [a custom `savedLean` code block](TextbookTemplate/Meta/Lean.lean)
 to indicate that an example or exercise should be saved. At elaboration time,
 a custom block element saves the original filename and the contents of the
-code block. Then, in [`DemoTextbookMain.lean`](DemoTextbookMain.lean), the
+code block. Then, in [`TextbookTemplateMain.lean`](TextbookTemplateMain.lean), the
 custom build step `buildExercises` traverses the entire book prior to HTML
 generation, collecting the exercise blocks. The collected blocks are assembled
 into files and written to the `example-code` subdirectory of the output.

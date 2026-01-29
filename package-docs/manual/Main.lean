@@ -16,10 +16,10 @@ open Std (HashMap)
 
 open Docs
 
-def config : Config where
+def config : RenderConfig where
   emitTeX := false
-  emitHtmlSingle := false
-  emitHtmlMulti := true
+  emitHtmlSingle := .no
+  emitHtmlMulti := .immediately
   htmlDepth := 2
 
 def main := manualMain (%doc Docs) (config := config)

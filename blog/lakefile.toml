@@ -5,7 +5,7 @@ defaultTargets = ["Blog", "generate-blog"]
 [[require]]
 name = "verso"
 git = "https://github.com/leanprover/verso.git"
-rev = "v4.26.0-rc2"
+rev = "v4.27.0"
 
 # The content of the blog is in this Lean library
 [[lean_lib]]

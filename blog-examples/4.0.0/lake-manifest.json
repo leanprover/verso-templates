@@ -1,11 +1,11 @@
 {"version": 5,
- "packagesDir": "lake-packages",
+ "packagesDir": ".lake/packages",
  "packages":
  [{"git":
    {"url": "https://github.com/leanprover/subverso.git",
     "subDir?": null,
-    "rev": "74707332877e302cbfa47a136380a4dd1f035269",
+    "rev": "0f1ee407c230744423d15786839cefe09f468181",
     "opts": {},
     "name": "subverso",
-    "inputRev?": "no-modules/1d663ae67d8088111bb37c3c526fe2d43e4df01c",
+    "inputRev?": "no-modules/1e55697c44a646f8a22e2a91878efc4496aa5743",
     "inherited": false}}]}

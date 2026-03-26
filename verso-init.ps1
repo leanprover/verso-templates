@@ -183,7 +183,8 @@ function New-VersoProject {
     Write-Host "Creating project from '$Template' in '$Directory'..."
 
     # Copy template files
-    Copy-Item -Path "$templateDir/" -Destination $Directory -Recurse -Force
+    New-Item -ItemType Directory -Path $Directory | Out-Null
+    Copy-Item -Path "$templateDir/*" -Destination $Directory -Recurse -Force
 
     # Remove build artifacts recursively (shouldn't be in a clone, but be defensive)
     Get-ChildItem -Path $Directory -Directory -Recurse | Where-Object { $_.Name -in @(".lake", "_site", "_out") } | ForEach-Object {

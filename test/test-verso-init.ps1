@@ -90,38 +90,26 @@ try {
     Write-Host "Test: error when directory exists"
     $target = Join-Path $WorkDir "test-exists"
     New-Item -ItemType Directory -Path $target | Out-Null
-    $exitCode = 0
-    try { pwsh $SetupPs1 -Branch $Branch blog $target 2>&1 | Out-Null } catch { $exitCode = 1 }
-    if ($exitCode -ne 0) { Pass "fails when directory exists" } else { Fail "should fail when directory exists" }
+    pwsh $SetupPs1 -Branch $Branch blog $target 2>&1 | Out-Null
+    if ($LASTEXITCODE -ne 0) { Pass "fails when directory exists" } else { Fail "should fail when directory exists" }
 
     Write-Host "Test: error with nonexistent template"
     $target = Join-Path $WorkDir "test-bad"
-    $exitCode = 0
-    try { pwsh $SetupPs1 -Branch $Branch nonexistent $target 2>&1 | Out-Null } catch { $exitCode = 1 }
-    if ($exitCode -ne 0) { Pass "fails with bad template name" } else { Fail "should fail with bad template name" }
+    pwsh $SetupPs1 -Branch $Branch nonexistent $target 2>&1 | Out-Null
+    if ($LASTEXITCODE -ne 0) { Pass "fails with bad template name" } else { Fail "should fail with bad template name" }
 
     Write-Host "Test: error when elan is not installed"
-    # Temporarily remove fake elan from PATH
+    # Remove all paths containing 'elan' and the fake bin from PATH
     $savedPath = $env:PATH
-    $env:PATH = ($env:PATH -split [System.IO.Path]::PathSeparator | Where-Object { $_ -ne $FakeBin }) -join [System.IO.Path]::PathSeparator
-    $noElanOutput = ""
-    try {
-        $noElanOutput = pwsh $SetupPs1 -Branch $Branch blog (Join-Path $WorkDir "no-elan") 2>&1 | Out-String
-    } catch {
-        $noElanOutput = $_.Exception.Message
-    }
+    $env:PATH = ($env:PATH -split [System.IO.Path]::PathSeparator | Where-Object { $_ -ne $FakeBin -and $_ -notmatch 'elan' }) -join [System.IO.Path]::PathSeparator
+    $noElanOutput = pwsh $SetupPs1 -Branch $Branch blog (Join-Path $WorkDir "no-elan") 2>&1 | Out-String
     $env:PATH = $savedPath
     if ($noElanOutput -match "elan.*not installed") { Pass "fails with helpful message when elan missing" } else { Fail "fails with helpful message when elan missing (got: $noElanOutput)" }
 
     Write-Host "Test: interactive mode via stdin piping"
     $target = Join-Path $WorkDir "test-interactive"
-    $exitCode = 0
-    try {
-        "1", $target | pwsh $SetupPs1 -Branch $Branch 2>&1 | Out-Null
-    } catch {
-        $exitCode = 1
-    }
-    if ((Test-Path "$target/lakefile.toml") -and $exitCode -eq 0) {
+    "1", $target | pwsh $SetupPs1 -Branch $Branch 2>&1 | Out-Null
+    if ((Test-Path "$target/lakefile.toml") -and $LASTEXITCODE -eq 0) {
         Pass "interactive: project created successfully"
     } else {
         Fail "interactive: project created successfully"

@@ -62,7 +62,8 @@ try {
 
     Write-Host "Test: batch mode with blog template"
     $target = Join-Path $WorkDir "test-blog"
-    pwsh $SetupPs1 -Branch $Branch blog $target 2>&1 | Out-Null
+    $output = pwsh -File $SetupPs1 -Branch $Branch blog $target 2>&1 | Out-String
+    if (-not (Test-Path "$target/lakefile.toml")) { Write-Host "DEBUG batch output: $output" }
     if (Test-Path "$target/lakefile.toml") { Pass "blog: lakefile.toml exists" } else { Fail "blog: lakefile.toml exists" }
     if (Test-Path "$target/lean-toolchain") { Pass "blog: lean-toolchain exists" } else { Fail "blog: lean-toolchain exists" }
     if (Test-Path "$target/README.md") { Pass "blog: README.md exists" } else { Fail "blog: README.md exists" }
@@ -74,14 +75,14 @@ try {
 
     Write-Host "Test: batch mode with textbook template"
     $target = Join-Path $WorkDir "test-textbook"
-    pwsh $SetupPs1 -Branch $Branch textbook $target 2>&1 | Out-Null
+    pwsh -File $SetupPs1 -Branch $Branch textbook $target 2>&1 | Out-Null
     if (Test-Path "$target/lakefile.toml") { Pass "textbook: lakefile.toml exists" } else { Fail "textbook: lakefile.toml exists" }
     $commitCount = git -C $target rev-list --count HEAD
     if ($commitCount -eq "1") { Pass "textbook: exactly one commit" } else { Fail "textbook: exactly one commit (got $commitCount)" }
 
     Write-Host "Test: batch mode with package-docs template"
     $target = Join-Path $WorkDir "test-docs"
-    pwsh $SetupPs1 -Branch $Branch package-docs $target 2>&1 | Out-Null
+    pwsh -File $SetupPs1 -Branch $Branch package-docs $target 2>&1 | Out-Null
     if (Test-Path "$target/manual/lakefile.toml") { Pass "package-docs: manual/lakefile.toml exists" } else { Fail "package-docs: manual/lakefile.toml exists" }
     if (Test-Path "$target/manual/Main.lean") { Pass "package-docs: manual/Main.lean exists" } else { Fail "package-docs: manual/Main.lean exists" }
     $commitCount = git -C $target rev-list --count HEAD

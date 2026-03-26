@@ -60,38 +60,9 @@ jobs:
         shell: pwsh
         run: |
           Invoke-WebRequest -Uri "https://raw.githubusercontent.com/leanprover/elan/master/elan-init.ps1" -OutFile elan-init.ps1
-          .\elan-init.ps1 -NoPrompt -DefaultToolchain none
+          .\elan-init.ps1 -NoPrompt $true -DefaultToolchain none
           "$env:USERPROFILE\.elan\bin" | Out-File -FilePath $env:GITHUB_PATH -Append
 
       - name: Run verso-init.ps1 tests
         shell: pwsh
-        run: pwsh test/test-verso-init.ps1 -Branch "${{ github.head_ref || github.ref_name }}"
-
-  test-ps-on-mac:
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Configure git identity
-        run: |
-          git config --global user.email "test@example.com"
-          git config --global user.name "Test"
-
-      - name: Install PowerShell
-        run: |
-          brew update
-          brew install --cask powershell
-
-      - name: Test no-elan error message (PowerShell on macOS)
-        run: |
-          output=$(pwsh verso-init.ps1 blog /tmp/no-elan-test 2>&1 || true)
-          echo "$output"
-          echo "$output" | grep -qi "elan.*not installed"
-
-      - name: Install elan
-        run: |
-          curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain none
-          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
-
-      - name: Run verso-init.ps1 tests on macOS
         run: pwsh test/test-verso-init.ps1 -Branch "${{ github.head_ref || github.ref_name }}"

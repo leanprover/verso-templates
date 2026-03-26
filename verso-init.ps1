@@ -14,8 +14,10 @@ param(
     [string]$Version = "",
     [string]$Branch = "",
     [switch]$Help,
-    [Parameter(ValueFromRemainingArguments = $true)]
-    [string[]]$Positional
+    [Parameter(Position = 0)]
+    [string]$Template = "",
+    [Parameter(Position = 1)]
+    [string]$Directory = ""
 )
 
 $ErrorActionPreference = 'Stop'
@@ -226,9 +228,6 @@ try {
         Show-TemplateList "$TempDir/repo" $templates
         exit 0
     }
-
-    $Template = if ($Positional.Count -ge 1) { $Positional[0] } else { "" }
-    $Directory = if ($Positional.Count -ge 2) { $Positional[1] } else { "" }
 
     if (-not $Template -and -not $Directory) {
         # Interactive mode

@@ -1,0 +1,32 @@
+name: Lint
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  shellcheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run shellcheck on verso-init.sh
+        run: shellcheck -s sh verso-init.sh
+      - name: Run shellcheck on test script
+        run: shellcheck test/test-verso-init.sh
+
+  psscriptanalyzer:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run PSScriptAnalyzer
+        shell: pwsh
+        run: |
+          Install-Module -Name PSScriptAnalyzer -Force -Scope CurrentUser
+          $results = Invoke-ScriptAnalyzer -Path verso-init.ps1 -Severity Warning,Error
+          $results += Invoke-ScriptAnalyzer -Path test/test-verso-init.ps1 -Severity Warning,Error
+          if ($results) {
+            $results | Format-Table -AutoSize
+            exit 1
+          }

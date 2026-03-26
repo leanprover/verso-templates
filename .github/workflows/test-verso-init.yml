@@ -1,0 +1,97 @@
+name: Test setup scripts
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  test-unix:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure git identity
+        run: |
+          git config --global user.email "test@example.com"
+          git config --global user.name "Test"
+
+      - name: Install expect (Ubuntu)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y expect
+
+      - name: Test no-elan error message
+        run: |
+          output=$(./verso-init.sh blog /tmp/no-elan-test 2>&1 || true)
+          echo "$output"
+          echo "$output" | grep -qi "elan.*not installed"
+
+      - name: Install elan
+        run: |
+          curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+      - name: Run verso-init.sh tests
+        run: bash test/test-verso-init.sh --branch "${{ github.head_ref || github.ref_name }}"
+
+  test-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure git identity
+        run: |
+          git config --global user.email "test@example.com"
+          git config --global user.name "Test"
+
+      - name: Test no-elan error message
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Continue'
+          $output = pwsh verso-init.ps1 blog no-elan-test 2>&1 | Out-String
+          $ErrorActionPreference = 'Stop'
+          Write-Host $output
+          if ($output -notmatch "elan.*not installed") { exit 1 }
+
+      - name: Install elan
+        shell: pwsh
+        run: |
+          Invoke-WebRequest -Uri "https://raw.githubusercontent.com/leanprover/elan/master/elan-init.ps1" -OutFile elan-init.ps1
+          .\elan-init.ps1 -NoPrompt -DefaultToolchain none
+          "$env:USERPROFILE\.elan\bin" | Out-File -FilePath $env:GITHUB_PATH -Append
+
+      - name: Run verso-init.ps1 tests
+        shell: pwsh
+        run: pwsh test/test-verso-init.ps1 -Branch "${{ github.head_ref || github.ref_name }}"
+
+  test-ps-on-mac:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure git identity
+        run: |
+          git config --global user.email "test@example.com"
+          git config --global user.name "Test"
+
+      - name: Install PowerShell
+        run: brew install --cask powershell
+
+      - name: Test no-elan error message (PowerShell on macOS)
+        run: |
+          output=$(pwsh verso-init.ps1 blog /tmp/no-elan-test 2>&1 || true)
+          echo "$output"
+          echo "$output" | grep -qi "elan.*not installed"
+
+      - name: Install elan
+        run: |
+          curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+      - name: Run verso-init.ps1 tests on macOS
+        run: pwsh test/test-verso-init.ps1 -Branch "${{ github.head_ref || github.ref_name }}"

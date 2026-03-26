@@ -50,13 +50,11 @@ jobs:
           git config --global user.name "Test"
 
       - name: Test no-elan error message
-        shell: pwsh
+        shell: bash
         run: |
-          $ErrorActionPreference = 'Continue'
-          $output = pwsh verso-init.ps1 blog no-elan-test 2>&1 | Out-String
-          $ErrorActionPreference = 'Stop'
-          Write-Host $output
-          if ($output -notmatch "elan.*not installed") { exit 1 }
+          output=$(pwsh verso-init.ps1 blog no-elan-test 2>&1 || true)
+          echo "$output"
+          echo "$output" | grep -qi "elan.*not installed"
 
       - name: Install elan
         shell: pwsh
@@ -80,7 +78,9 @@ jobs:
           git config --global user.name "Test"
 
       - name: Install PowerShell
-        run: brew install --cask powershell
+        run: |
+          brew update
+          brew install --cask powershell
 
       - name: Test no-elan error message (PowerShell on macOS)
         run: |

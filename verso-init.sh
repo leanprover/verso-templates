@@ -240,7 +240,11 @@ create_project() {
     echo ""
     echo "To get started:"
     echo "  cd $directory"
-    echo "  lake build"
+    if [ -f "$directory/lakefile.toml" ] || [ -f "$directory/lakefile.lean" ]; then
+        echo "  lake build"
+    else
+        echo "  See README.md for build instructions."
+    fi
     echo ""
 }
 

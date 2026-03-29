@@ -1,0 +1,14 @@
+name = "basic-book"
+defaultTargets = ["Book", "generate-book"]
+
+[[require]]
+name = "verso"
+git = "https://github.com/leanprover/verso"
+rev = "v4.28.0"
+
+[[lean_lib]]
+name = "Book"
+
+[[lean_exe]]
+name = "generate-book"
+root = "Main"

@@ -1,3 +1,6 @@
+import Std.Data.HashMap
+open Std
+
 -- ANCHOR: Expr
 inductive Expr where
   | var : String → Expr
@@ -17,10 +20,10 @@ def Expr.optimize : Expr → Expr
 -- ANCHOR_END: Optimize
 
 -- ANCHOR: eval
-def Expr.eval (ρ : List (String × Nat)) :
+def Expr.eval (ρ : HashMap String Nat) :
     Expr → Except String Nat
   | .var x =>
-    if let some v := ρ.lookup x then pure v
+    if let some v := ρ[x]? then pure v
     else throw s!"{x} not found"
   | .nat n => pure n
   | .plus e1 e2 => do
@@ -40,12 +43,12 @@ theorem Except.bind_pure_comp (e : Except ε α) :
 -- ANCHOR_END: lemmas
 
 -- ANCHOR: correct
+@[simp]
+theorem Except.map_pure_add_zero (e : Except ε Nat) :
+    HAdd.hAdd 0 <$> e = e := by
+  cases e <;> simp [Functor.map, Except.map]
+
 theorem optimize_correct (e : Expr) :
     e.eval ρ = e.optimize.eval ρ := by
-  induction e with
-  | plus e1 e2 ih1 ih2 =>
-    simp only [Expr.optimize]
-    split <;> simp [Expr.eval, *]
-  | var | nat =>
-    simp [Expr.optimize]
+  fun_induction Expr.optimize <;> simp_all [Expr.eval, Expr.optimize]
 -- ANCHOR_END: correct

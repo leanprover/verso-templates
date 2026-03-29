@@ -10,7 +10,7 @@ open Verso Genre Blog
 
 open Verso.Code.External
 
-set_option verso.exampleProject "../blog-examples/4.22.0"
+set_option verso.exampleProject "../blog-examples/4.28.0"
 set_option verso.exampleModule "New"
 
 #doc (Post) "Lean Got Better!" =>
@@ -22,7 +22,7 @@ categories := [examples]
 %%%
 
 Lean has definitely improved in the last couple of years!
-As I write this, Lean 4.22 is hot off the presses, so let's look at a few of the improvements since 4.0.
+As I write this, Lean 4.28 is the latest stable release, so let's look at a few of the improvements since 4.20.
 In Lean, I can define a type of expressions with variables:
 
 ```anchor Expr
@@ -63,7 +63,8 @@ theorem optimize_correct (e : Expr) :
   have : HAdd.hAdd 0 = id := by grind
   fun_induction Expr.optimize <;> simp [Expr.eval, *]
 ```
-The first step is to establish a fact that will be needed in the $`0 + e ↦ e` case:
+The first step is to establish a fact that will be needed in the $`0 + e ↦ e` case.
+Lean's {anchorTerm lemma}`grind` tactic handles this automatically:
 ```anchor lemma
   have : HAdd.hAdd 0 = id := by grind
 ```
@@ -75,34 +76,9 @@ Having this in the context makes it available in the use of {anchorTerm ind}`sim
 The simplifier takes care of all of them, using the lemma.
 
 In older versions of Lean, this was more difficult!
-The definition of expressions and the optimizer are the same, but the evaluator represents its environment as a list of pairs because {anchorName eval}`HashMap` was not yet available:
-```anchor eval (module := Old) (project := "../blog-examples/4.0.0")
-def Expr.eval (ρ : List (String × Nat)) :
-    Expr → Except String Nat
-  | .var x =>
-    if let some v := ρ.lookup x then pure v
-    else throw s!"{x} not found"
-  | .nat n => pure n
-  | .plus e1 e2 => do
-    return (← e1.eval ρ) + (← e2.eval ρ)
-```
-
-Back then, the {anchorTerm ind}`fun_induction` tactic was not yet available, so the older proof is by induction on the structure of the expression being optimized:
-```anchor correct (module := Old) (project := "../blog-examples/4.0.0")
-theorem optimize_correct (e : Expr) :
-    e.eval ρ = e.optimize.eval ρ := by
-  induction e with
-  | plus e1 e2 ih1 ih2 =>
-    simp only [Expr.optimize]
-    split <;> simp [Expr.eval, *]
-  | var | nat =>
-    simp [Expr.optimize]
-```
-This proof was written to be as similar as possible to the newer version.
-The {anchorTerm correct (module := Old) (project := "../blog-examples/4.0.0")}`| var | nat =>` case matches the fallback case, and {anchorTerm correct (module := Old) (project := "../blog-examples/4.0.0")}`split` creates the other cases.
-Nonetheless, the proof is noisier, and requires steps like unfolding {anchorName correct (module := Old) (project := "../blog-examples/4.0.0")}`Expr.optimize` prior to case-splitting.
-Furthermore, because there was not nearly as much theory in the standard library back then, this proof also requires additional lemmas:
-```anchor lemmas (module := Old) (project := "../blog-examples/4.0.0")
+The {anchorTerm lemma}`grind` tactic was not yet available, so the $`0 + e ↦ e` fact had to be established by hand.
+Furthermore, because there was not nearly as much theory in the standard library, the proof also requires additional lemmas about {anchorName correct (module := Old) (project := "../blog-examples/4.20.0")}`Except`:
+```anchor lemmas (module := Old) (project := "../blog-examples/4.20.0")
 @[simp]
 theorem Except.pure_bind (v : α) (f : α → Except ε β) :
     pure v >>= f = f v := by
@@ -112,6 +88,18 @@ theorem Except.pure_bind (v : α) (f : α → Except ε β) :
 theorem Except.bind_pure_comp (e : Except ε α) :
     e >>= (pure ·) = e := by
   cases e <;> simp [bind, Except.bind, pure, Except.pure]
+```
+
+With those lemmas in hand, the proof itself also needs more manual work:
+```anchor correct (module := Old) (project := "../blog-examples/4.20.0")
+@[simp]
+theorem Except.map_pure_add_zero (e : Except ε Nat) :
+    HAdd.hAdd 0 <$> e = e := by
+  cases e <;> simp [Functor.map, Except.map]
+
+theorem optimize_correct (e : Expr) :
+    e.eval ρ = e.optimize.eval ρ := by
+  fun_induction Expr.optimize <;> simp_all [Expr.eval, Expr.optimize]
 ```
 
 Even for tiny proofs like this, the progress is wonderful!

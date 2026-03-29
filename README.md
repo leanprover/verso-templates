@@ -3,6 +3,49 @@
 This repository contains templates that can be used to get started with Verso. Each template is a
 full project that can be copied directly and used a basis for your own writing.
 
+## Getting Started
+
+The quickest way to create a new Verso project is with the setup script. It checks for
+prerequisites ([elan](https://github.com/leanprover/elan) and
+[git](https://git-scm.com/)), lets you pick a template, and creates a new project with a clean
+git history.
+
+### Prerequisites
+
+- [Git](https://git-scm.com/downloads)
+- [elan](https://github.com/leanprover/elan#installation) (the Lean version manager)
+
+### Unix (macOS / Linux)
+
+Interactive (prompts you to choose a template):
+```
+curl -sSfL https://raw.githubusercontent.com/leanprover/verso-templates/main/verso-init.sh | sh
+```
+
+Or specify the template and directory directly:
+```
+curl -sSfL https://raw.githubusercontent.com/leanprover/verso-templates/main/verso-init.sh | sh -s -- textbook my-textbook
+```
+
+### Windows
+
+From PowerShell or cmd.exe:
+```
+powershell -c "irm https://raw.githubusercontent.com/leanprover/verso-templates/main/verso-init.ps1 | iex"
+```
+
+Or download and run with arguments:
+```
+powershell -ExecutionPolicy Bypass -File verso-init.ps1 basic-blog my-blog
+```
+
+### Options
+
+- `--list` / `-List`: List available templates
+- `--version VERSION` / `-Version VERSION`: Use a specific version (e.g. `v4.28.0`). Defaults to the latest stable release.
+
+## Browsing the Examples
+
 Each example can be built or modified independently. Additionally, they can all be examined together
 by running `./generate.sh`, which builds all the examples, copies their output to a single
 directory, and adds an overview page. To build and view all the examples, run:
@@ -14,6 +57,11 @@ The page is served at `localhost:8000`.
 
 
 # Book-Like Examples
+
+## Basic Book
+
+This example is a minimal book-like document, showing the smallest way to get started with the
+Manual genre. There are no customizations or advanced features used.
 
 ## Package Description
 
@@ -45,7 +93,11 @@ them to files.
 
 # Web
 
-## Blog
+## Basic Blog
+
+The basic blog example demonstrates the minimal code necessary to get started with using Verso as a static site generator. There are no customizations.
+
+## Blog - Advanced Features
 
 The blog example is a personal website that uses Lean code in blog posts. It demonstrates how to
 configure and extend the blog genre, including how to implement a custom theme to control the HTML

@@ -58,6 +58,11 @@ The page is served at `localhost:8000`.
 
 # Book-Like Examples
 
+## Basic Book
+
+This example is a minimal book-like document, showing the smallest way to get started with the
+Manual genre. There are no customizations or advanced features used.
+
 ## Package Description
 
 This example demonstrates a way to use Verso to describe Lean code.
@@ -87,6 +92,10 @@ Then, a custom build pass traverses the document, finding all the indicated exam
 them to files.
 
 # Web
+
+## Basic Blog
+
+The basic blog example demonstrates the minimal code necessary to get started with using Verso as a static site generator. There are no customizations.
 
 ## Blog
 

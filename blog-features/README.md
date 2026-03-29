@@ -1,4 +1,4 @@
-# Blog Genre - Advanced Features
+# Blog - Advanced Features
 
 This directory contains a blog that uses the features of the Verso static site generator more
 extensively. It includes:

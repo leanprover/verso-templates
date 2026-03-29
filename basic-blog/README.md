@@ -1,4 +1,4 @@
-# A Basic Verso Blog
+# Basic Verso Blog/Website
 
 A minimal blog built with Verso's blog genre. Includes a front page, an about page, and a single post.
 

@@ -68,6 +68,7 @@ set -e
 popd || exit 1
 
 echo "Collecting generated HTML..."
+rm -rf out
 mkdir -p out || { FAILED_COMMANDS+=("$PWD: mkdir -p out"); }
 set +e
 run_command cp -r basic-blog/_site out/basic-blog

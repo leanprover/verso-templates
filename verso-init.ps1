@@ -115,7 +115,9 @@ function Initialize-TempClone {
     New-Item -ItemType Directory -Path $script:TempDir | Out-Null
 
     Write-Host "Fetching templates ($Ref)..."
+    $ErrorActionPreference = 'Continue'
     git clone --depth 1 --single-branch --branch $Ref $RepoUrl "$($script:TempDir)/repo" 2>&1 | Out-Null
+    $ErrorActionPreference = 'Stop'
     if ($LASTEXITCODE -ne 0) {
         Write-Error "Failed to fetch templates. Check your network connection and try again."
         exit 1

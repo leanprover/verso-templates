@@ -17,8 +17,24 @@ run_command() {
     return 0
 }
 
+echo "Generating basic blog HTML..."
+pushd basic-blog || { FAILED_COMMANDS+=("$PWD: pushd basic-blog"); exit 1; }
+set +e
+run_command lake update
+run_command lake exe generate-blog
+set -e
+popd || exit 1
+
+echo "Generating basic book HTML..."
+pushd basic-book || { FAILED_COMMANDS+=("$PWD: pushd basic-book"); exit 1; }
+set +e
+run_command lake update
+run_command lake exe generate-book
+set -e
+popd || exit 1
+
 echo "Generating example blog HTML..."
-pushd blog || { FAILED_COMMANDS+=("$PWD: pushd blog"); exit 1; }
+pushd blog-features/blog || { FAILED_COMMANDS+=("$PWD: pushd blog-features/blog"); exit 1; }
 set +e
 run_command lake update
 run_command lake exe generate-blog
@@ -54,7 +70,9 @@ popd || exit 1
 echo "Collecting generated HTML..."
 mkdir -p out || { FAILED_COMMANDS+=("$PWD: mkdir -p out"); }
 set +e
-run_command cp -r blog/_site out/blog
+run_command cp -r basic-blog/_site out/basic-blog
+run_command cp -r basic-book/_out/html-multi out/basic-book
+run_command cp -r blog-features/blog/_site out/blog-features
 run_command cp -r package-docs/manual/_out/html-multi out/package-docs
 run_command cp -r textbook/_out/html-multi out/textbook
 run_command cp textbook/_out/code.zip out/textbook/

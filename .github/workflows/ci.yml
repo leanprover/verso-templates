@@ -14,7 +14,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        example: ['blog', 'package-docs', 'textbook']
+        example: ['basic-blog', 'basic-book', 'blog-features', 'package-docs', 'textbook']
 
 
     steps:
@@ -68,9 +68,7 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: |
-            ${{ matrix.example }}/.lake
-            ${{ matrix.example }}/manual/.lake
-            ${{ matrix.example }}/zippers/.lake
+            ${{ matrix.example }}/**/.lake
           key: ${{matrix.example}}-${{ runner.os }}-${{ steps.cache-keys.outputs.toolchain }}-${{ steps.cache-keys.outputs.lakefile }}-${{ steps.cache-keys.outputs.manifests }}-success
           restore-keys: |
             ${{matrix.example}}-${{ runner.os }}-${{ steps.cache-keys.outputs.toolchain }}-${{ steps.cache-keys.outputs.lakefile }}-${{ steps.cache-keys.outputs.manifests }}-
@@ -97,9 +95,7 @@ jobs:
         if: always()
         with:
           path: |
-            ${{ matrix.example }}/.lake
-            ${{ matrix.example }}/manual/.lake
-            ${{ matrix.example }}/zippers/.lake
+            ${{ matrix.example }}/**/.lake
           key: ${{matrix.example}}-${{ runner.os }}-${{ steps.cache-keys.outputs.toolchain }}-${{ steps.cache-keys.outputs.lakefile }}-${{ steps.cache-keys.outputs.manifests }}-${{ job.status }}
 
       - name: Create tarball

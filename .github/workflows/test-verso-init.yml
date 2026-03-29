@@ -27,7 +27,7 @@ jobs:
 
       - name: Test no-elan error message
         run: |
-          output=$(./verso-init.sh blog /tmp/no-elan-test 2>&1 || true)
+          output=$(./verso-init.sh basic-blog /tmp/no-elan-test 2>&1 || true)
           echo "$output"
           echo "$output" | grep -qi "elan.*not installed"
 
@@ -52,7 +52,7 @@ jobs:
       - name: Test no-elan error message
         shell: bash
         run: |
-          output=$(pwsh verso-init.ps1 blog no-elan-test 2>&1 || true)
+          output=$(pwsh verso-init.ps1 basic-blog no-elan-test 2>&1 || true)
           echo "$output"
           echo "$output" | grep -qi "elan.*not installed"
 

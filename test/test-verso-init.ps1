@@ -56,22 +56,22 @@ try {
 
     Write-Host "Test: -List flag"
     $output = pwsh $SetupPs1 -List -Branch $Branch 2>&1 | Out-String
-    if ($output -match "blog") { Pass "-List shows blog template" } else { Fail "-List shows blog template" }
+    if ($output -match "basic-blog") { Pass "-List shows basic-blog template" } else { Fail "-List shows basic-blog template" }
     if ($output -match "textbook") { Pass "-List shows textbook template" } else { Fail "-List shows textbook template" }
     if ($output -match "package-docs") { Pass "-List shows package-docs template" } else { Fail "-List shows package-docs template" }
 
-    Write-Host "Test: batch mode with blog template"
+    Write-Host "Test: batch mode with basic-blog template"
     $target = Join-Path $WorkDir "test-blog"
-    $output = pwsh -File $SetupPs1 -Branch $Branch blog $target 2>&1 | Out-String
+    $output = pwsh -File $SetupPs1 -Branch $Branch basic-blog $target 2>&1 | Out-String
     if (-not (Test-Path "$target/lakefile.toml")) { Write-Host "DEBUG batch output: $output" }
-    if (Test-Path "$target/lakefile.toml") { Pass "blog: lakefile.toml exists" } else { Fail "blog: lakefile.toml exists" }
-    if (Test-Path "$target/lean-toolchain") { Pass "blog: lean-toolchain exists" } else { Fail "blog: lean-toolchain exists" }
-    if (Test-Path "$target/README.md") { Pass "blog: README.md exists" } else { Fail "blog: README.md exists" }
-    if (-not (Test-Path "$target/.lake")) { Pass "blog: no .lake directory" } else { Fail "blog: no .lake directory" }
+    if (Test-Path "$target/lakefile.toml") { Pass "basic-blog: lakefile.toml exists" } else { Fail "basic-blog: lakefile.toml exists" }
+    if (Test-Path "$target/lean-toolchain") { Pass "basic-blog: lean-toolchain exists" } else { Fail "basic-blog: lean-toolchain exists" }
+    if (Test-Path "$target/README.md") { Pass "basic-blog: README.md exists" } else { Fail "basic-blog: README.md exists" }
+    if (-not (Test-Path "$target/.lake")) { Pass "basic-blog: no .lake directory" } else { Fail "basic-blog: no .lake directory" }
     $commitCount = git -C $target rev-list --count HEAD
-    if ($commitCount -eq "1") { Pass "blog: exactly one commit" } else { Fail "blog: exactly one commit (got $commitCount)" }
+    if ($commitCount -eq "1") { Pass "basic-blog: exactly one commit" } else { Fail "basic-blog: exactly one commit (got $commitCount)" }
     $commitMsg = git -C $target log --oneline -1
-    if ($commitMsg -match "verso-templates/blog") { Pass "blog: commit message mentions template" } else { Fail "blog: commit message mentions template (got: $commitMsg)" }
+    if ($commitMsg -match "verso-templates/basic-blog") { Pass "basic-blog: commit message mentions template" } else { Fail "basic-blog: commit message mentions template (got: $commitMsg)" }
 
     Write-Host "Test: batch mode with textbook template"
     $target = Join-Path $WorkDir "test-textbook"
@@ -91,7 +91,7 @@ try {
     Write-Host "Test: error when directory exists"
     $target = Join-Path $WorkDir "test-exists"
     New-Item -ItemType Directory -Path $target | Out-Null
-    pwsh $SetupPs1 -Branch $Branch blog $target 2>&1 | Out-Null
+    pwsh $SetupPs1 -Branch $Branch basic-blog $target 2>&1 | Out-Null
     if ($LASTEXITCODE -ne 0) { Pass "fails when directory exists" } else { Fail "should fail when directory exists" }
 
     Write-Host "Test: error with nonexistent template"
@@ -103,7 +103,7 @@ try {
     # Remove all paths containing 'elan' and the fake bin from PATH
     $savedPath = $env:PATH
     $env:PATH = ($env:PATH -split [System.IO.Path]::PathSeparator | Where-Object { $_ -ne $FakeBin -and $_ -notmatch 'elan' }) -join [System.IO.Path]::PathSeparator
-    $noElanOutput = pwsh $SetupPs1 -Branch $Branch blog (Join-Path $WorkDir "no-elan") 2>&1 | Out-String
+    $noElanOutput = pwsh $SetupPs1 -Branch $Branch basic-blog (Join-Path $WorkDir "no-elan") 2>&1 | Out-String
     $env:PATH = $savedPath
     if ($noElanOutput -match "elan.*not installed") { Pass "fails with helpful message when elan missing" } else { Fail "fails with helpful message when elan missing (got: $noElanOutput)" }
 

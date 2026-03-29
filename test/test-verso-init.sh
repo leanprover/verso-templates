@@ -81,10 +81,10 @@ test_help() {
 test_list() {
     echo "Test: --list flag"
     output=$("$SETUP_SH" --list --branch "$TEST_BRANCH" 2>&1)
-    if echo "$output" | grep -q "blog"; then
-        pass "--list shows blog template"
+    if echo "$output" | grep -q "basic-blog"; then
+        pass "--list shows basic-blog template"
     else
-        fail "--list shows blog template"
+        fail "--list shows basic-blog template"
     fi
     if echo "$output" | grep -q "textbook"; then
         pass "--list shows textbook template"
@@ -101,42 +101,42 @@ test_list() {
 test_batch_blog() {
     echo "Test: batch mode with blog template"
     target="$WORK_DIR/test-blog"
-    "$SETUP_SH" --branch "$TEST_BRANCH" blog "$target" 2>&1
+    "$SETUP_SH" --branch "$TEST_BRANCH" basic-blog "$target" 2>&1
 
     if assert_file_exists "$target/lakefile.toml"; then
-        pass "blog: lakefile.toml exists"
+        pass "basic-blog: lakefile.toml exists"
     else
-        fail "blog: lakefile.toml exists"
+        fail "basic-blog: lakefile.toml exists"
     fi
     if assert_file_exists "$target/lean-toolchain"; then
-        pass "blog: lean-toolchain exists"
+        pass "basic-blog: lean-toolchain exists"
     else
-        fail "blog: lean-toolchain exists"
+        fail "basic-blog: lean-toolchain exists"
     fi
     if assert_file_exists "$target/README.md"; then
-        pass "blog: README.md exists"
+        pass "basic-blog: README.md exists"
     else
-        fail "blog: README.md exists"
+        fail "basic-blog: README.md exists"
     fi
     if assert_dir_not_exists "$target/.lake"; then
-        pass "blog: no .lake directory"
+        pass "basic-blog: no .lake directory"
     else
-        fail "blog: no .lake directory"
+        fail "basic-blog: no .lake directory"
     fi
 
     # Check git history
     commit_count=$(git -C "$target" rev-list --count HEAD)
     if [ "$commit_count" = "1" ]; then
-        pass "blog: exactly one commit"
+        pass "basic-blog: exactly one commit"
     else
-        fail "blog: exactly one commit (got $commit_count)"
+        fail "basic-blog: exactly one commit (got $commit_count)"
     fi
 
     commit_msg=$(git -C "$target" log --oneline -1)
-    if echo "$commit_msg" | grep -q "verso-templates/blog"; then
-        pass "blog: commit message mentions template"
+    if echo "$commit_msg" | grep -q "verso-templates/basic-blog"; then
+        pass "basic-blog: commit message mentions template"
     else
-        fail "blog: commit message mentions template (got: $commit_msg)"
+        fail "basic-blog: commit message mentions template (got: $commit_msg)"
     fi
 }
 
@@ -185,7 +185,7 @@ test_error_existing_directory() {
     echo "Test: error when directory exists"
     target="$WORK_DIR/test-exists"
     mkdir -p "$target"
-    if "$SETUP_SH" --branch "$TEST_BRANCH" blog "$target" 2>&1; then
+    if "$SETUP_SH" --branch "$TEST_BRANCH" basic-blog "$target" 2>&1; then
         fail "should fail when directory exists"
     else
         pass "fails when directory exists"
@@ -204,7 +204,7 @@ test_error_bad_template() {
 
 test_error_missing_args() {
     echo "Test: error with only one positional arg"
-    if "$SETUP_SH" --branch "$TEST_BRANCH" blog 2>&1; then
+    if "$SETUP_SH" --branch "$TEST_BRANCH" basic-blog 2>&1; then
         fail "should fail with only template arg"
     else
         pass "fails with only template arg"
@@ -216,7 +216,7 @@ test_error_no_elan() {
     # Run with a PATH that has no elan
     output=$(PATH="/usr/bin:/bin" "$SETUP_SH" --help 2>&1 || true)
     # --help shouldn't need elan, but running without --help should fail
-    output=$(PATH="/usr/bin:/bin" "$SETUP_SH" --branch "$TEST_BRANCH" blog "$WORK_DIR/no-elan" 2>&1 || true)
+    output=$(PATH="/usr/bin:/bin" "$SETUP_SH" --branch "$TEST_BRANCH" basic-blog "$WORK_DIR/no-elan" 2>&1 || true)
     if echo "$output" | grep -qi "elan.*not installed"; then
         pass "fails with helpful message when elan missing"
     else
@@ -263,7 +263,7 @@ EXPECT_EOF
 test_curl_pipe() {
     echo "Test: simulated curl | sh (batch mode)"
     target="$WORK_DIR/test-pipe"
-    sh -s -- --branch "$TEST_BRANCH" blog "$target" < "$SETUP_SH" 2>&1
+    sh -s -- --branch "$TEST_BRANCH" basic-blog "$target" < "$SETUP_SH" 2>&1
 
     if assert_file_exists "$target/lakefile.toml"; then
         pass "pipe: project created via stdin"

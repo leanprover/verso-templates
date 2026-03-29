@@ -36,7 +36,7 @@ powershell -c "irm https://raw.githubusercontent.com/leanprover/verso-templates/
 
 Or download and run with arguments:
 ```
-powershell -ExecutionPolicy Bypass -File verso-init.ps1 blog my-blog
+powershell -ExecutionPolicy Bypass -File verso-init.ps1 basic-blog my-blog
 ```
 
 ### Options
@@ -97,7 +97,7 @@ them to files.
 
 The basic blog example demonstrates the minimal code necessary to get started with using Verso as a static site generator. There are no customizations.
 
-## Blog
+## Blog - Advanced Features
 
 The blog example is a personal website that uses Lean code in blog posts. It demonstrates how to
 configure and extend the blog genre, including how to implement a custom theme to control the HTML

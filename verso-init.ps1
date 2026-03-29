@@ -195,9 +195,11 @@ function New-VersoProject {
     }
 
     # Initialize new git repo
-    git -C $Directory init -q
-    git -C $Directory add .
-    git -C $Directory commit -q -m "Initial commit from verso-templates/$Template"
+    $ErrorActionPreference = 'Continue'
+    git -C $Directory init -q 2>&1 | Out-Null
+    git -C $Directory add . 2>&1 | Out-Null
+    git -C $Directory commit -q -m "Initial commit from verso-templates/$Template" 2>&1 | Out-Null
+    $ErrorActionPreference = 'Stop'
 
     Write-Host ""
     Write-Host "Created new Verso project in '$Directory' from template '$Template'."

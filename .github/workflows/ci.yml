@@ -43,25 +43,11 @@ jobs:
           TOOLCHAIN=$(find ${{ matrix.example }} -name 'lean-toolchain' -type f | grep -v '\.lake' | sort | xargs cat | tr -d '[:space:]' | sha256sum | cut -d' ' -f1)
           echo "toolchain=$TOOLCHAIN" >> "$GITHUB_OUTPUT"
 
-          LAKEFILE=""
-          while read -r file; do
-            filename=$(echo "$file" | sed 's|^\./||')
-            file_hash=$(sha256sum "$file" | cut -d' ' -f1)
-            LAKEFILE="$LAKEFILE--$filename-$file_hash"
-          done < <(find ${{ matrix.example }} -name 'lakefile.*' -type f | grep -v '\.lake' | sort)
-          echo "$LAKEFILE"
+          LAKEFILE=$(find ${{ matrix.example }} -name 'lakefile.*' -type f | grep -v '\.lake' | sort | xargs cat | sha256sum | cut -d' ' -f1)
           echo "lakefile=$LAKEFILE" >> "$GITHUB_OUTPUT"
-          echo "lakefile=$LAKEFILE"
 
-          LAKE_MANIFESTS=""
-          while read -r file; do
-            filename=$(echo "$file" | sed 's|^\./||')
-            file_hash=$(sha256sum "$file" | cut -d' ' -f1)
-            LAKE_MANIFESTS="${LAKE_MANIFESTS}-${filename}-${file_hash}"
-          done < <(find ${{ matrix.example }} -name 'lake-manifest.json' -type f | grep -v '\.lake' | sort)
-
-          echo "manifests=$LAKE_MANIFESTS" >> "$GITHUB_OUTPUT"
-          cat "$GITHUB_OUTPUT"
+          MANIFESTS=$(find ${{ matrix.example }} -name 'lake-manifest.json' -type f | grep -v '\.lake' | sort | xargs cat | sha256sum | cut -d' ' -f1)
+          echo "manifests=$MANIFESTS" >> "$GITHUB_OUTPUT"
 
 
       - name: Restore cache of .lake

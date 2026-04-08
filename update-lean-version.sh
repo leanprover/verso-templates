@@ -157,37 +157,48 @@ if [ -f "$MANUAL_MANIFEST" ]; then
 
     if [ -n "$SUBVERSO_REV" ]; then
         echo
-        echo "Updating subverso references in blog-examples to: no-modules/$SUBVERSO_REV"
+        echo "Updating subverso references in blog-examples..."
 
-        # Update lakefile.lean files in blog-examples
-        while IFS= read -r file; do
-            if is_tracked "$file"; then
-                echo "  Updating $file"
-                # Update @"main" or @"anything" to @"no-modules/$SUBVERSO_REV" in lakefile.lean
-                sed -i.bak "s|@\"[^\"]*\"|@\"no-modules/$SUBVERSO_REV\"|" "$file"
-                rm -f "$file.bak"
-            fi
-        done < <(git ls-files | grep -E 'blog-examples/.*/lakefile\.lean$')
-
-        # Update lakefile.toml files in blog-examples
-        while IFS= read -r file; do
-            if is_tracked "$file"; then
-                echo "  Updating $file"
-                # Update ref or rev in lakefile.toml (handles both ref = "..." and rev = "...")
-                # Update both ref and rev to handle both field names
-                sed -i.bak "/name = \"subverso\"/,/^$/{
-                    s|ref = \"[^\"]*\"|ref = \"no-modules/$SUBVERSO_REV\"|
-                    s|rev = \"[^\"]*\"|rev = \"no-modules/$SUBVERSO_REV\"|
-                }" "$file"
-                rm -f "$file.bak"
-            fi
-        done < <(git ls-files | grep -E 'blog-examples/.*/lakefile\.toml$')
-
-        # Run lake update in blog-examples directories
-        echo
-        echo "Running lake update in blog-examples directories..."
         for dir in blog-features/blog-examples/*/; do
-            if [ -d "$dir" ] && { [ -f "$dir/lakefile.lean" ] || [ -f "$dir/lakefile.toml" ]; }; then
+            if [ ! -d "$dir" ]; then
+                continue
+            fi
+
+            # Determine subverso ref based on lean-toolchain version
+            # Lean >= 4.25.0 supports the module system; older versions need the no-modules branch
+            toolchain_file="$dir/lean-toolchain"
+            if [ -f "$toolchain_file" ]; then
+                toolchain_version=$(sed -E 's|.*:v?||' "$toolchain_file")
+                minor=$(echo "$toolchain_version" | cut -d. -f2)
+            else
+                minor=0
+            fi
+
+            if [ "$minor" -ge 25 ]; then
+                subverso_ref="$SUBVERSO_REV"
+            else
+                subverso_ref="no-modules/$SUBVERSO_REV"
+            fi
+
+            echo "  $dir -> subverso ref: $subverso_ref"
+
+            # Update lakefile.lean if present
+            if [ -f "$dir/lakefile.lean" ] && is_tracked "$dir/lakefile.lean"; then
+                sed -i.bak "s|@\"[^\"]*\"|@\"$subverso_ref\"|" "$dir/lakefile.lean"
+                rm -f "$dir/lakefile.lean.bak"
+            fi
+
+            # Update lakefile.toml if present
+            if [ -f "$dir/lakefile.toml" ] && is_tracked "$dir/lakefile.toml"; then
+                sed -i.bak "/name = \"subverso\"/,/^$/{
+                    s|ref = \"[^\"]*\"|ref = \"$subverso_ref\"|
+                    s|rev = \"[^\"]*\"|rev = \"$subverso_ref\"|
+                }" "$dir/lakefile.toml"
+                rm -f "$dir/lakefile.toml.bak"
+            fi
+
+            # Run lake update
+            if [ -f "$dir/lakefile.lean" ] || [ -f "$dir/lakefile.toml" ]; then
                 echo "  Running lake update in $dir..."
                 set +e
                 (cd "$dir" && lake update --keep-toolchain)

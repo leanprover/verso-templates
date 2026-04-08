@@ -44,6 +44,13 @@ powershell -ExecutionPolicy Bypass -File verso-init.ps1 basic-blog my-blog
 - `--list` / `-List`: List available templates
 - `--version VERSION` / `-Version VERSION`: Use a specific version (e.g. `v4.28.0`). Defaults to the latest stable release.
 
+### Manually
+
+If you would prefer not to run a script to select a template, then you can download one directly
+from the [releases page](https://github.com/leanprover/verso-templates/releases). Each release
+provides `.tar.gz` and `.zip` archives for every template, with a fresh Git history already
+initialized.
+
 ## Browsing the Examples
 
 Each example can be built or modified independently. Additionally, they can all be examined together

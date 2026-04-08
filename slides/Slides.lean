@@ -12,24 +12,24 @@ transition := "slide"
 # Welcome
 
 This is a presentation built with
-[VersoSlides](https://github.com/leanprover/verso-slides).
+[`verso-slides`](https://github.com/leanprover/verso-slides).
 
 # Lean Code
 
-Here is an elaborated Lean code block:
+Here is a Lean code block:
 
 ```lean
-def fibonacci : Nat → Nat
+def fib : Nat → Nat
   | 0 => 0
   | 1 => 1
-  | n + 2 => fibonacci (n + 1) + fibonacci n
+  | n + 2 => fib (n + 1) + fib n
 ```
 
 ```lean
-#eval fibonacci 10
+#eval fib 10
 ```
 
-The function {lean}`fibonacci` computes Fibonacci numbers.
+The function {lean}`fib` computes Fibonacci numbers.
 
 # Thank You
 

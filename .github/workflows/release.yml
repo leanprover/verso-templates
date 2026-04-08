@@ -31,6 +31,11 @@ jobs:
           done
           echo "templates=$templates" >> "$GITHUB_OUTPUT"
 
+      - name: Configure git identity
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
       - name: Build archives
         run: |
           tag="${GITHUB_REF_NAME}"

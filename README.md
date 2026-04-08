@@ -104,3 +104,8 @@ configure and extend the blog genre, including how to implement a custom theme t
 generation, a custom HTML component that generates an animated greeter on the front page, and
 automatic breadcrumbs.
 
+# Presentations
+
+This example is a minimal [`reveal.js`](https://revealjs.com) slide presentation using
+[`verso-slides`](https://github.com/leanprover/verso-slides), with a title slide and a slide that
+demonstrates Lean code with an info panel.

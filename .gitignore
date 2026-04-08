@@ -6,3 +6,4 @@ _site
 /blog-examples/4.0.0/build
 /blog-examples/4.0.0/lake-packages
 lake-packages
+/slides/_slides/

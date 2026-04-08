@@ -54,7 +54,7 @@ while IFS= read -r file; do
         rm -f "$file.bak"
         FILES_UPDATED=$((FILES_UPDATED + 1))
     fi
-done < <(git ls-files | grep -E 'lean-toolchain$' | grep -v '^blog-examples/')
+done < <(git ls-files | grep -E 'lean-toolchain$' | grep -v 'blog-examples/')
 
 echo
 
@@ -80,7 +80,7 @@ while IFS= read -r file; do
             FILES_UPDATED=$((FILES_UPDATED + 1))
         fi
     fi
-done < <(git ls-files | grep -E 'lakefile\.toml$' | grep -v '^blog-examples/')
+done < <(git ls-files | grep -E 'lakefile\.toml$' | grep -v 'blog-examples/')
 
 echo
 
@@ -102,7 +102,7 @@ if [ ${#LAKE_DIRS[@]} -gt 0 ]; then
         echo "  Running lake update in $dir..."
         # Temporarily disable exit on error for lake update
         set +e
-        (cd "$dir" && lake update)
+        (cd "$dir" && lake update --keep-toolchain)
         exit_code=$?
         set -e
 
@@ -139,7 +139,7 @@ if [ -f "$MANUAL_MANIFEST" ] && [ -f "$ZIPPERS_LAKEFILE" ]; then
         ZIPPERS_DIR=$(dirname "$ZIPPERS_LAKEFILE")
         echo "  Running lake update in $ZIPPERS_DIR..."
         set +e
-        (cd "$ZIPPERS_DIR" && lake update)
+        (cd "$ZIPPERS_DIR" && lake update --keep-toolchain)
         exit_code=$?
         set -e
         if [ $exit_code -ne 0 ]; then
@@ -167,7 +167,7 @@ if [ -f "$MANUAL_MANIFEST" ]; then
                 sed -i.bak "s|@\"[^\"]*\"|@\"no-modules/$SUBVERSO_REV\"|" "$file"
                 rm -f "$file.bak"
             fi
-        done < <(git ls-files | grep -E '^blog-examples/.*/lakefile\.lean$')
+        done < <(git ls-files | grep -E 'blog-examples/.*/lakefile\.lean$')
 
         # Update lakefile.toml files in blog-examples
         while IFS= read -r file; do
@@ -181,16 +181,16 @@ if [ -f "$MANUAL_MANIFEST" ]; then
                 }" "$file"
                 rm -f "$file.bak"
             fi
-        done < <(git ls-files | grep -E '^blog-examples/.*/lakefile\.toml$')
+        done < <(git ls-files | grep -E 'blog-examples/.*/lakefile\.toml$')
 
         # Run lake update in blog-examples directories
         echo
         echo "Running lake update in blog-examples directories..."
-        for dir in blog-examples/*/; do
+        for dir in blog-features/blog-examples/*/; do
             if [ -d "$dir" ] && { [ -f "$dir/lakefile.lean" ] || [ -f "$dir/lakefile.toml" ]; }; then
                 echo "  Running lake update in $dir..."
                 set +e
-                (cd "$dir" && lake update)
+                (cd "$dir" && lake update --keep-toolchain)
                 exit_code=$?
                 set -e
                 if [ $exit_code -ne 0 ]; then

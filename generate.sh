@@ -67,6 +67,14 @@ run_command zip -r code.zip example-code
 set -e
 popd || exit 1
 
+echo "Generating slides HTML..."
+pushd slides || { FAILED_COMMANDS+=("$PWD: pushd slides"); exit 1; }
+set +e
+run_command lake update
+run_command lake exe generate-slides
+set -e
+popd || exit 1
+
 echo "Collecting generated HTML..."
 rm -rf out
 mkdir -p out || { FAILED_COMMANDS+=("$PWD: mkdir -p out"); }
@@ -77,6 +85,7 @@ run_command cp -r blog-features/blog/_site out/blog-features
 run_command cp -r package-docs/manual/_out/html-multi out/package-docs
 run_command cp -r textbook/_out/html-multi out/textbook
 run_command cp textbook/_out/code.zip out/textbook/
+run_command cp -r slides/_slides out/slides
 set -e
 
 # Report results

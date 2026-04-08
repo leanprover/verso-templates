@@ -1,0 +1,65 @@
+name: Create release with template tarballs
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Detect templates
+        id: templates
+        run: |
+          # Use the same logic as verso-init.sh: top-level dirs containing a lakefile
+          templates=""
+          for dir in */; do
+            [ -d "$dir" ] || continue
+            name=$(basename "$dir")
+            case "$name" in
+              .*|out|test) continue ;;
+            esac
+            if find "$dir" \( -name "lakefile.toml" -o -name "lakefile.lean" \) -type f | grep -q .; then
+              templates="$templates $name"
+            fi
+          done
+          echo "templates=$templates" >> "$GITHUB_OUTPUT"
+
+      - name: Build archives
+        run: |
+          tag="${GITHUB_REF_NAME}"
+          mkdir -p dist
+          for name in ${{ steps.templates.outputs.templates }}; do
+            stagedir=$(mktemp -d)
+            mkdir -p "$stagedir/$name"
+            cp -a "$name/." "$stagedir/$name/"
+
+            # Remove build artifacts
+            find "$stagedir/$name" -type d \( -name ".lake" -o -name "_site" -o -name "_out" \) -exec rm -rf {} + 2>/dev/null || true
+
+            # Initialize a fresh git repo
+            git -C "$stagedir/$name" init -q
+            git -C "$stagedir/$name" add .
+            git -C "$stagedir/$name" commit -q -m "Initial commit from verso-templates/$name ($tag)"
+
+            # Create tarball and zip
+            tar -czf "dist/${name}.tar.gz" -C "$stagedir" "$name"
+            (cd "$stagedir" && zip -rq - "$name") > "dist/${name}.zip"
+
+            rm -rf "$stagedir"
+          done
+
+      - name: Create release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag="${GITHUB_REF_NAME}"
+          gh release create "$tag" dist/*.tar.gz dist/*.zip \
+            --title "$tag" \
+            --generate-notes

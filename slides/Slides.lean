@@ -3,11 +3,6 @@ import VersoSlides
 open VersoSlides
 
 #doc (Slides) "My Presentation" =>
-%%%
-theme := "black"
-slideNumber := true
-transition := "slide"
-%%%
 
 # Welcome
 

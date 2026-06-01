@@ -3,5 +3,7 @@ import Slides
 
 open VersoSlides
 
-def main (args : List String) : IO UInt32 :=
-  slidesMain (doc := %doc Slides) (args := args)
+def main : IO UInt32 :=
+  slidesMain
+    (config := { theme := "black", slideNumber := true, transition := "slide" })
+    (doc := %doc Slides)

@@ -50,7 +50,7 @@ while IFS= read -r file; do
     if is_tracked "$file"; then
         echo "  Updating $file"
         # Update the version, handling both with and without 'v' prefix
-        sed -i.bak -E "s|leanprover/lean4:v?[0-9][^[:space:]]*|leanprover/lean4:$NEW_VERSION|" "$file"
+        sed -i.bak -E "s|leanprover/lean4:v?[0-9][^[:space:]]*|leanprover/lean4:v$NEW_VERSION|" "$file"
         rm -f "$file.bak"
         FILES_UPDATED=$((FILES_UPDATED + 1))
     fi

@@ -25,7 +25,7 @@ open Lean Elab Term Command in
 /--
 Extract the marked exercises and example code.
 -/
-partial def buildExercises (mode : Mode) (logError : String → IO Unit) (cfg : Config) (_state : TraverseState) (text : Part Manual) : IO Unit := do
+partial def buildExercises (mode : Mode) (cfg : Config) (_state : TraverseState) (text : Part Manual) : BuildLogT IO Unit := do
   let .multi := mode
     | pure ()
   let code := (← part text |>.run {}).snd
@@ -39,22 +39,22 @@ partial def buildExercises (mode : Mode) (logError : String → IO Unit) (cfg : 
     if let some fn' := fn.dropPrefix? mainDir.toString then
       let fn' := (fn'.dropWhile (· ∈ System.FilePath.pathSeparators)).copy
       let fn := dest / fn'
-      fn.parent.forM IO.FS.createDirAll
+      if let some parent := fn.parent then IO.FS.createDirAll parent
       if (← fn.pathExists) then IO.FS.removeFile fn
       IO.FS.writeFile fn f
     else
-      logError s!"Couldn't save example code. The path '{fn}' is not underneath '{mainDir}'."
+      reportError s!"Couldn't save example code. The path '{fn}' is not underneath '{mainDir}'."
 
 where
-  part : Part Manual → StateT (HashMap String String) IO Unit
+  part : Part Manual → StateT (HashMap String String) (BuildLogT IO) Unit
     | .mk _ _ _ intro subParts => do
       for b in intro do block b
       for p in subParts do part p
-  block : Block Manual → StateT (HashMap String String) IO Unit
+  block : Block Manual → StateT (HashMap String String) (BuildLogT IO) Unit
     | .other which contents => do
       if which.name == ``Block.savedLean then
         let .arr #[.str fn, .str code] := which.data
-          | logError s!"Failed to deserialize saved Lean data {which.data}"
+          | reportError s!"Failed to deserialize saved Lean data {which.data}"
         modify fun saved =>
           saved.alter fn fun prior =>
             let prior := prior.getD ""
@@ -62,7 +62,7 @@ where
 
       if which.name == ``Block.savedImport then
         let .arr #[.str fn, .str code] := which.data
-          | logError s!"Failed to deserialize saved Lean import data {which.data}"
+          | reportError s!"Failed to deserialize saved Lean import data {which.data}"
         modify fun saved =>
           saved.alter fn fun prior =>
           let prior := prior.getD ""

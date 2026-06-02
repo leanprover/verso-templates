@@ -4,7 +4,7 @@ defaultTargets = ["Blog", "generate-blog"]
 [[require]]
 name = "verso"
 git = "https://github.com/leanprover/verso.git"
-rev = "v4.30.0"
+rev = "v4.31.0-rc1"
 
 [[lean_lib]]
 name = "Blog"

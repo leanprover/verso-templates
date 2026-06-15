@@ -4,7 +4,7 @@ defaultTargets = ["Zippers"]
 [[require]]
 name = "subverso"
 git = "https://github.com/leanprover/subverso"
-rev = "no-modules/a86770a5eba721c8554d1d7fce741bc4dde3bb61"
+rev = "no-modules/0bd508e8362f56d4a05cbf63614d4c97db954041"
 
 [[lean_lib]]
 name = "Zippers"

@@ -70,6 +70,10 @@ The page is served at `localhost:8000`.
 This example is a minimal book-like document, showing the smallest way to get started with the
 Manual genre. There are no customizations or advanced features used.
 
+## Basic Note
+
+Similar to the Basic Book example, but defaults to a single-page HTML file. This should be suitable to host any single-page Verso example from [live.lean-lang.org](https://live.lean-lang.org/#url=https%3A%2F%2Flive.lean-lang.org%2Fapi%2Fexample%2Fverso-demo%2FVersoDemo%2FIntegralApprox.lean&project=verso-demo).
+
 ## Package Description
 
 This example demonstrates a way to use Verso to describe Lean code.

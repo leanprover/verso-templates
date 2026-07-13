@@ -3,7 +3,7 @@ name = "examples"
 [[require]]
 name = "subverso"
 git = "https://github.com/leanprover/subverso.git"
-rev = "no-modules/0bd508e8362f56d4a05cbf63614d4c97db954041"
+rev = "no-modules/0076a9e8a3670d83c54c93414b2b26d3a8aba08d"
 
 [[lean_lib]]
 name = "Old"

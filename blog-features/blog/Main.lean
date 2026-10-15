@@ -10,54 +10,54 @@ def theme : Theme := { Theme.default with
     let postList :=
       match (← param? "posts") with
       | none => Html.empty
-      | some html => {{ <h2> "Posts" </h2> }} ++ html
+      | some html => html%{<h2>Posts</h2>} ++ html
     let catList :=
       match (← param? (α := Post.Categories) "categories") with
       | none => Html.empty
-      | some ⟨cats⟩ => {{
+      | some ⟨cats⟩ => html%{
           <div class="category-directory">
-            <h2> "Categories" </h2>
+            <h2>Categories</h2>
             <ul>
-            {{ cats.map fun (target, cat) =>
-              {{<li><a href={{target}}>{{Post.Category.name cat}}</a></li>}}
-            }}
+            { cats.map fun (target, cat) =>
+              html%{<li><a href={target}>{Post.Category.name cat}</a></li>}
+            }
             </ul>
           </div>
-        }}
-    return {{
+        }
+    return html%{
       <html>
         <head>
           <meta charset="utf-8"/>
           <meta name="viewport" content="width=device-width, initial-scale=1"/>
           <meta name="color-scheme" content="light dark"/>
           <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sakura.css/css/sakura.css" type="text/css"/>
-          <title>{{ (← param (α := String) "title") }} " — Verso "</title>
+          <title>{← param (α := String) "title"} — Verso</title>
           <link rel="stylesheet" href="/static/style.css"/>
-          {{← builtinHeader }}
+          {← builtinHeader}
         </head>
         <body>
           <header>
             <div class="inner-wrap">
-            {{ if (← currentPath).isEmpty then .empty else
-              {{ <a class="logo" href="/"><h1>"Axiomatizing Alex"</h1></a> }} }}
-            {{ ← topNav }}
+            { if (← currentPath).isEmpty then .empty else
+              html%{<a class="logo" href="/"><h1>Axiomatizing Alex</h1></a>} }
+            {← topNav}
             </div>
           </header>
           <main>
             <div class="wrap">
-              {{← breadcrumbs 2}}
-              {{← param "content" }}
-              {{ catList }}
-              {{ postList }}
+              {← breadcrumbs 2}
+              {← param "content"}
+              {catList}
+              {postList}
             </div>
           </main>
         </body>
       </html>
-    }}
+    }
   }
   |>.override #[] {
     template := do
-      return {{<div class="frontpage">{{← param "content"}}</div>}},
+      return html%{<div class="frontpage">{← param "content"}</div>},
     params := id
   }
 

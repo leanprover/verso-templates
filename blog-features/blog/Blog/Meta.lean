@@ -173,25 +173,25 @@ Displays an animated greeter for the front page of the blog.
 block_component +directive greeter where
   toHtml id _data _goI goB contents := do
     saveJs <| "if (document.getElementById('" ++ id ++ "')) { initGreeter(); }"
-    pure {{
-    <div class="greeter-container" id={{id}}>
+    pure html%{
+    <div class="greeter-container" id={id}>
         <div class="particles" id="particles"></div>
 
-        <div class="floating-math">"∀ n : ℕ, P n → P (n + 1)"</div>
-        <div class="floating-math">"theorem ∘ proof ∘ verification"</div>
-        <div class="floating-math">"λ x. f (g x)"</div>
-        <div class="floating-math">"#check #eval #reduce"</div>
-        <div class="floating-math">"∃ k, n = 2 * k"</div>
-        <div class="floating-math">"by induction n with"</div>
+        <div class="floating-math">∀ n : ℕ, P n → P (n + 1)</div>
+        <div class="floating-math">theorem ∘ proof ∘ verification</div>
+        <div class="floating-math">λ x. f (g x)</div>
+        <div class="floating-math">#check #eval #reduce</div>
+        <div class="floating-math">∃ k, n = 2 * k</div>
+        <div class="floating-math">by induction n with</div>
 
 
 
         <div class="greeter">
-            <h1 class="title">"Axiomatizing Alex"</h1>
-            {{← contents.mapM goB}}
+            <h1 class="title">Axiomatizing Alex</h1>
+            {← contents.mapM goB}
         </div>
     </div>
-    }}
+    }
 
   cssFiles := #[("greeter.css", greeterCss)]
   jsFiles := #[("greeter.js", greeterJs)]
@@ -210,22 +210,22 @@ def breadcrumbs (threshold : Nat) : Template := do
   if (← read).path.size ≥ threshold then
     let some pathTitles ← parents (← read).site (← read).path.toList
       | pure .empty
-    pure {{
+    pure html%{
       <nav class="breadcrumbs" role="navigation">
         <ol>
-          {{ crumbLinks pathTitles |>.map ({{<li>{{·}}</li>}}) }}
+          { crumbLinks pathTitles |>.map (html%{<li>{·}</li>}) }
         </ol>
       </nav>
-    }}
+    }
   else pure .empty
 where
   crumbLinks (titles : List String) : List Html := go titles.length titles
   go
-    | 0, xs | 1, xs => xs.map Html.ofString
+    | 0, xs | 1, xs => xs.map Lean.Html.text
     | _, [] => []
     | n+1, x::xs =>
       let path := String.join <| List.replicate n "../"
-      {{<a href={{path}}>{{x}}</a>}} :: go n xs
+      html%{<a href={path}>{x}</a>} :: go n xs
 
   parents (s : Site) (path : List String) : OptionT TemplateM (List String) :=
     match s with

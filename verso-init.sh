@@ -6,7 +6,8 @@
 #   List:         verso-init.sh --list
 set -eu
 
-REPO_URL="https://github.com/leanprover/verso-templates.git"
+# Overriden in CI to test templates coming from a fork
+REPO_URL="${VERSO_TEMPLATES_REPO_URL:-https://github.com/leanprover/verso-templates.git}"
 RESOLVED_REF=""
 TMPDIR_SETUP=""
 
@@ -23,6 +24,9 @@ Options:
   --version VER     Use a specific version tag (e.g. v4.28.0). Default: latest stable
   --branch BRANCH   Use a specific branch (overrides --version)
   --help, -h        Show this help message
+
+Environment:
+  VERSO_TEMPLATES_REPO_URL  Git URL to fetch templates from. Default: github.com/leanprover/verso-templates
 
 Examples:
   verso-init.sh blog my-blog

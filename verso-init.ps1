@@ -22,7 +22,8 @@ param(
 
 $ErrorActionPreference = 'Stop'
 
-$RepoUrl = "https://github.com/leanprover/verso-templates.git"
+# Overriden in CI to test templates coming from a fork
+$RepoUrl = if ($env:VERSO_TEMPLATES_REPO_URL) { $env:VERSO_TEMPLATES_REPO_URL } else { "https://github.com/leanprover/verso-templates.git" }
 $TempDir = $null
 
 function Show-Usage {
@@ -38,6 +39,9 @@ Options:
   -Version VER      Use a specific version tag (e.g. v4.28.0). Default: latest stable
   -Branch BRANCH    Use a specific branch (overrides -Version)
   -Help             Show this help message
+
+Environment:
+  VERSO_TEMPLATES_REPO_URL  Git URL to fetch templates from. Default: github.com/leanprover/verso-templates
 
 Examples:
   pwsh verso-init.ps1 blog my-blog

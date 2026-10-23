@@ -4,8 +4,7 @@ A minimal blog built with Verso's blog genre. Includes a front page, an about pa
 
 Build with:
 ```
-lake build
-lake exe generate-blog
+lake lean Main.lean -- --run Main.lean
 ```
 
 The generated site will be in `_site/`.

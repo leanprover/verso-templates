@@ -206,11 +206,7 @@ function New-VersoProject {
     Write-Host ""
     Write-Host "To get started:"
     Write-Host "  cd $Directory"
-    if ((Test-Path "$Directory/lakefile.toml") -or (Test-Path "$Directory/lakefile.lean")) {
-        Write-Host "  lake build"
-    } else {
-        Write-Host "  See README.md for build instructions."
-    }
+    Write-Host "  See README.md for build instructions."
     Write-Host ""
 }
 

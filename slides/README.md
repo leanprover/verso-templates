@@ -8,7 +8,7 @@ that demonstrates Lean code with an info panel.
 
 To build the slides, run:
 ```
-$ lake exe generate-slides
+$ lake lean Main.lean -- --run Main.lean
 ```
 
 The output is written to the `_slides/` directory. Run a local web server to view the presentation.

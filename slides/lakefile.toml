@@ -1,5 +1,5 @@
 name = "my-slides"
-defaultTargets = ["Slides", "generate-slides"]
+defaultTargets = ["Slides"]
 
 [[require]]
 name = "verso-slides"
@@ -8,7 +8,3 @@ rev = "v4.36.0-rc2"
 
 [[lean_lib]]
 name = "Slides"
-
-[[lean_exe]]
-name = "generate-slides"
-root = "Main"

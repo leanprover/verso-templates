@@ -1,5 +1,5 @@
 name = "zipper-manual"
-defaultTargets = ["Docs", "docs"]
+defaultTargets = ["Docs"]
 
 [[require]]
 name = "verso"
@@ -8,7 +8,3 @@ rev = "v4.36.0-rc2"
 
 [[lean_lib]]
 name = "Docs"
-
-[[lean_exe]]
-name = "docs"
-root = "Main"

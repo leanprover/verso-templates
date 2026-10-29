@@ -6,6 +6,10 @@ on:
       - main
   pull_request:
 
+env:
+  # In PRs, fetch templates from the repository that the PR branch lives in (which may be a fork)
+  VERSO_TEMPLATES_REPO_URL: ${{ github.event.pull_request.head.repo.clone_url || format('{0}/{1}.git', github.server_url, github.repository) }}
+
 jobs:
   test-unix:
     strategy:

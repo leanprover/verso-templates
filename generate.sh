@@ -21,7 +21,7 @@ echo "Generating basic blog HTML..."
 pushd basic-blog || { FAILED_COMMANDS+=("$PWD: pushd basic-blog"); exit 1; }
 set +e
 run_command lake update
-run_command lake exe generate-blog
+run_command lake lean Main.lean -- --run Main.lean
 set -e
 popd || exit 1
 
@@ -29,7 +29,7 @@ echo "Generating basic book HTML..."
 pushd basic-book || { FAILED_COMMANDS+=("$PWD: pushd basic-book"); exit 1; }
 set +e
 run_command lake update
-run_command lake exe generate-book
+run_command lake lean Main.lean -- --run Main.lean
 set -e
 popd || exit 1
 
@@ -37,7 +37,7 @@ echo "Generating example blog HTML..."
 pushd blog-features/blog || { FAILED_COMMANDS+=("$PWD: pushd blog-features/blog"); exit 1; }
 set +e
 run_command lake update
-run_command lake exe generate-blog
+run_command lake lean Main.lean -- --run Main.lean
 set -e
 popd || exit 1
 
@@ -51,7 +51,7 @@ popd || exit 1
 pushd package-docs/manual || { FAILED_COMMANDS+=("$PWD: pushd package-docs/manual"); exit 1; }
 set +e
 run_command lake update
-run_command lake exe docs
+run_command lake lean Main.lean -- --run Main.lean
 set -e
 popd || exit 1
 
@@ -59,7 +59,7 @@ echo "Generating textbook HTML and code..."
 pushd textbook || { FAILED_COMMANDS+=("$PWD: pushd textbook"); exit 1; }
 set +e
 run_command lake update
-run_command lake exe textbook
+run_command lake lean TextbookTemplateMain.lean -- --run TextbookTemplateMain.lean
 set -e
 cd _out || { FAILED_COMMANDS+=("$PWD: cd _out"); popd; exit 1; }
 set +e
@@ -71,7 +71,7 @@ echo "Generating slides HTML..."
 pushd slides || { FAILED_COMMANDS+=("$PWD: pushd slides"); exit 1; }
 set +e
 run_command lake update
-run_command lake exe generate-slides
+run_command lake lean Main.lean -- --run Main.lean
 set -e
 popd || exit 1
 

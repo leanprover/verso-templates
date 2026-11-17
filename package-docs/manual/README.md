@@ -5,7 +5,7 @@ The code being documented is in the sibling [`../zippers/`](../zippers/) directo
 
 To build it, run:
 ```
-$ lake lean Main.lean -- --run Main.lean
+$ lake run versoMain Main.lean
 ```
 
 The generated site will be in `_out/html-multi/`.

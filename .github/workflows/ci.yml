@@ -31,7 +31,7 @@ jobs:
           echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
 
       - name: Restore cache of .elan/toolchains
-        uses: actions/cache/restore@v5.1.0
+        uses: actions/cache/restore@v6.1.0
         with:
           path: ~/.elan/toolchains
           key: ${{ runner.os }}-success-${{ hashFiles('**/lean-toolchain') }}
@@ -53,7 +53,7 @@ jobs:
 
 
       - name: Restore cache of .lake
-        uses: actions/cache/restore@v5.1.0
+        uses: actions/cache/restore@v6.1.0
         with:
           path: |
             ${{ matrix.example }}/**/.lake
@@ -72,14 +72,14 @@ jobs:
           done
 
       - name: Save toolchain cache
-        uses: actions/cache/save@v5.1.0
+        uses: actions/cache/save@v6.1.0
         if: always()
         with:
           path: ~/.elan/toolchains
           key: ${{ runner.os }}-${{ job.status }}-${{ hashFiles('**/lean-toolchain') }}
 
       - name: Save cache of .lake
-        uses: actions/cache/save@v5.1.0
+        uses: actions/cache/save@v6.1.0
         if: always()
         with:
           path: |
@@ -120,7 +120,7 @@ jobs:
           echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
 
       - name: Restore cache of .elan/toolchains
-        uses: actions/cache/restore@v5.1.0
+        uses: actions/cache/restore@v6.1.0
         with:
           path: ~/.elan/toolchains
           key: ${{ runner.os }}-success-${{ hashFiles('**/lean-toolchain') }}
@@ -152,7 +152,7 @@ jobs:
         run: ./generate.sh
 
       - name: Save toolchain cache
-        uses: actions/cache/save@v5.1.0
+        uses: actions/cache/save@v6.1.0
         if: always()
         with:
           path: ~/.elan/toolchains

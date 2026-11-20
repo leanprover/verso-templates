@@ -6,6 +6,9 @@ on:
       - main
   pull_request:
 
+permissions:
+  contents: read
+
 env:
   # In PRs, fetch templates from the repository that the PR branch lives in (which may be a fork)
   VERSO_TEMPLATES_REPO_URL: ${{ github.event.pull_request.head.repo.clone_url || format('{0}/{1}.git', github.server_url, github.repository) }}
@@ -18,7 +21,7 @@ jobs:
         os: [ubuntu-latest, macos-latest]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7.0.1
 
       - name: Configure git identity
         run: |
@@ -41,12 +44,14 @@ jobs:
           echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
 
       - name: Run verso-init.sh tests
-        run: bash test/test-verso-init.sh --branch "${{ github.head_ref || github.ref_name }}"
+        env:
+          TEST_BRANCH: ${{ github.head_ref || github.ref_name }}
+        run: bash test/test-verso-init.sh --branch "$TEST_BRANCH"
 
   test-windows:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7.0.1
 
       - name: Configure git identity
         run: |
@@ -69,4 +74,6 @@ jobs:
 
       - name: Run verso-init.ps1 tests
         shell: pwsh
-        run: pwsh test/test-verso-init.ps1 -Branch "${{ github.head_ref || github.ref_name }}"
+        env:
+          TEST_BRANCH: ${{ github.head_ref || github.ref_name }}
+        run: pwsh test/test-verso-init.ps1 -Branch "$env:TEST_BRANCH"

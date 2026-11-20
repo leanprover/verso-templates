@@ -6,6 +6,8 @@ on:
       - main
   pull_request:
 
+permissions:
+  contents: read
 
 jobs:
   check:
@@ -19,7 +21,7 @@ jobs:
 
     steps:
       - name: Check out code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7.0.1
 
       - name: Install elan
         run: |
@@ -29,7 +31,7 @@ jobs:
           echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
 
       - name: Restore cache of .elan/toolchains
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5.1.0
         with:
           path: ~/.elan/toolchains
           key: ${{ runner.os }}-success-${{ hashFiles('**/lean-toolchain') }}
@@ -51,7 +53,7 @@ jobs:
 
 
       - name: Restore cache of .lake
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5.1.0
         with:
           path: |
             ${{ matrix.example }}/**/.lake
@@ -70,14 +72,14 @@ jobs:
           done
 
       - name: Save toolchain cache
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5.1.0
         if: always()
         with:
           path: ~/.elan/toolchains
           key: ${{ runner.os }}-${{ job.status }}-${{ hashFiles('**/lean-toolchain') }}
 
       - name: Save cache of .lake
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5.1.0
         if: always()
         with:
           path: |
@@ -86,20 +88,15 @@ jobs:
 
       - name: Create tarball
         run: |
-          cd $GITHUB_WORKSPACE
+          cd "$GITHUB_WORKSPACE"
 
-          # Find all .lake directories under matrix.example, excluding nested ones
-          lake_dirs=$(find ${{ matrix.example }} -name '.lake' -type d ! -path '*/.lake/*')
-
-          if [ -n "$lake_dirs" ]; then
-            tar -czf ${{ matrix.example }}-lake-cache.tar.gz $lake_dirs
-          else
-            # Create empty tarball if no .lake directories found
-            tar -czf ${{ matrix.example }}-lake-cache.tar.gz --files-from /dev/null
-          fi
+          # Archive all .lake directories under matrix.example, excluding nested
+          # ones. The tarball is empty if there are none.
+          find ${{ matrix.example }} -name '.lake' -type d ! -path '*/.lake/*' -print0 |
+            tar -czf ${{ matrix.example }}-lake-cache.tar.gz --null --files-from -
 
       - name: Upload results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: example-${{ matrix.example }}-results
           path: ${{ matrix.example }}-lake-cache.tar.gz
@@ -113,7 +110,7 @@ jobs:
     steps:
 
       - name: Check out code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7.0.1
 
       - name: Install elan
         run: |
@@ -123,7 +120,7 @@ jobs:
           echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
 
       - name: Restore cache of .elan/toolchains
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5.1.0
         with:
           path: ~/.elan/toolchains
           key: ${{ runner.os }}-success-${{ hashFiles('**/lean-toolchain') }}
@@ -132,7 +129,7 @@ jobs:
             ${{ runner.os }}-
 
       - name: Download all artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7.0.0
         with:
           pattern: example-*-results
           merge-multiple: true
@@ -155,7 +152,7 @@ jobs:
         run: ./generate.sh
 
       - name: Save toolchain cache
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5.1.0
         if: always()
         with:
           path: ~/.elan/toolchains

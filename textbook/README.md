@@ -2,7 +2,7 @@ This is a demonstration of a textbook built in Verso's manual genre.
 
 To build it, run:
 ```
-$ lake exe textbook
+$ lake run versoMain TextbookTemplateMain.lean
 ```
 
 This textbook is written in the `Manual` genre. It uses the same

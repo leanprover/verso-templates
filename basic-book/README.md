@@ -4,8 +4,7 @@ A minimal book built with Verso's Manual genre. Includes two chapters, with inli
 
 Build with:
 ```
-lake build
-lake exe generate-book
+lake run versoMain Main.lean
 ```
 
 The generated site will be in `_out/html-multi/`.

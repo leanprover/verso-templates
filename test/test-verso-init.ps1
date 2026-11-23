@@ -31,6 +31,8 @@ function Fail($msg) {
 $FakeBin = Join-Path ([System.IO.Path]::GetTempPath()) "verso-test-bin-$([System.Guid]::NewGuid().ToString('N').Substring(0,8))"
 New-Item -ItemType Directory -Path $FakeBin | Out-Null
 
+$savedRepoUrl = $env:VERSO_TEMPLATES_REPO_URL
+
 $WorkDir = Join-Path ([System.IO.Path]::GetTempPath()) "verso-test-$([System.Guid]::NewGuid().ToString('N').Substring(0,8))"
 New-Item -ItemType Directory -Path $WorkDir | Out-Null
 
@@ -120,7 +122,35 @@ try {
         if ($commitCount -eq "1") { Pass "interactive: exactly one commit" } else { Fail "interactive: exactly one commit (got $commitCount)" }
     }
 
+    Write-Host "Test: latest stable version is chosen numerically"
+    $tagRepo = Join-Path $WorkDir "tag-repo"
+    New-Item -ItemType Directory -Path "$tagRepo/tmpl" | Out-Null
+    Set-Content -Path "$tagRepo/tmpl/lakefile.toml" -Value "name = `"tmpl`""
+    git -C $tagRepo init -q -b main
+    git -C $tagRepo config user.email "test@example.com"
+    git -C $tagRepo config user.name "Test"
+    foreach ($tag in @("v4.100.0-rc2", "v4.100.0", "v4.9.0", "v4.28.0", "v4.101.0-rc1", "v4", "v4.102.0-beta1")) {
+        Set-Content -Path "$tagRepo/tmpl/marker" -Value $tag
+        git -C $tagRepo add .
+        git -C $tagRepo commit -q -m $tag
+        git -C $tagRepo tag $tag
+    }
+    $env:VERSO_TEMPLATES_REPO_URL = $tagRepo
+    $target = Join-Path $WorkDir "test-latest"
+    pwsh -File $SetupPs1 tmpl $target 2>&1 | Out-Null
+    $marker = if (Test-Path "$target/marker") { (Get-Content "$target/marker").Trim() } else { "" }
+    if ($marker -eq "v4.100.0") { Pass "latest stable is v4.100.0" } else { Fail "latest stable is v4.100.0 (got: '$marker')" }
+    $target = Join-Path $WorkDir "test-explicit"
+    pwsh -File $SetupPs1 -Version v4.28.0 tmpl $target 2>&1 | Out-Null
+    $marker = if (Test-Path "$target/marker") { (Get-Content "$target/marker").Trim() } else { "" }
+    if ($marker -eq "v4.28.0") { Pass "explicit version v4.28.0 is used" } else { Fail "explicit version v4.28.0 is used (got: '$marker')" }
+    $target = Join-Path $WorkDir "test-explicit-rc"
+    pwsh -File $SetupPs1 -Version v4.100.0-rc2 tmpl $target 2>&1 | Out-Null
+    $marker = if (Test-Path "$target/marker") { (Get-Content "$target/marker").Trim() } else { "" }
+    if ($marker -eq "v4.100.0-rc2") { Pass "explicit version v4.100.0-rc2 is used" } else { Fail "explicit version v4.100.0-rc2 is used (got: '$marker')" }
+
 } finally {
+    if ($null -eq $savedRepoUrl) { Remove-Item Env:VERSO_TEMPLATES_REPO_URL -ErrorAction SilentlyContinue } else { $env:VERSO_TEMPLATES_REPO_URL = $savedRepoUrl }
     if (Test-Path $WorkDir) { Remove-Item -Path $WorkDir -Recurse -Force -ErrorAction SilentlyContinue }
     if (Test-Path $FakeBin) { Remove-Item -Path $FakeBin -Recurse -Force -ErrorAction SilentlyContinue }
 }

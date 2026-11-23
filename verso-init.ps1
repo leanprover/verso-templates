@@ -86,7 +86,10 @@ function Resolve-TemplateVersion {
     if ($rawTags) {
         $tags = $rawTags | ForEach-Object {
             if ($_ -match 'refs/tags/(v[0-9][^\^]*)$') { $Matches[1] }
-        } | Where-Object { $_ } | Sort-Object
+        } | Where-Object { $_ -match '^v\d+\.\d+\.\d+(-rc\d+)?$' } | Sort-Object -Property `
+            @{ Expression = { [version](($_ -replace '^v', '') -replace '-.*$', '') } },
+            @{ Expression = { $_ -notmatch '-' } },
+            @{ Expression = { if ($_ -match '-rc(\d+)$') { [int]$Matches[1] } else { 0 } } }
     }
 
     if ($RequestedVersion -and $RequestedVersion -ne "latest") {
@@ -104,7 +107,7 @@ function Resolve-TemplateVersion {
     }
 
     # Find latest stable (no -rc suffix)
-    $stable = $tags | Where-Object { $_ -notmatch '-rc' }
+    $stable = $tags | Where-Object { $_ -notmatch '-' }
     if ($stable) {
         if ($stable -is [array]) { return $stable[-1] } else { return $stable }
     }

@@ -129,7 +129,7 @@ jobs:
             ${{ runner.os }}-
 
       - name: Download all artifacts
-        uses: actions/download-artifact@v7.0.0
+        uses: actions/download-artifact@v8.0.2
         with:
           pattern: example-*-results
           merge-multiple: true
